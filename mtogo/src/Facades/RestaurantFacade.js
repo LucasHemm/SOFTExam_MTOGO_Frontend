@@ -73,5 +73,18 @@ export default class RestaurantFacade {
         }
     }
 
-
+    //get all menu items for a restaurant
+    async getRestaurantMenuItems(id) {
+        try {
+            const response = await fetch(`${this.url}/menuitems/${id}`);
+            if (!response.ok) {
+                throw new Error(`Error: ${response.status} ${response.statusText}`);
+            }
+            const data = await response.json();
+            return data;
+        } catch (error) {
+            console.error("Failed to fetch menu items:", error);
+            throw error;
+        }
+    }
 }

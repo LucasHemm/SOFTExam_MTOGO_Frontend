@@ -5,6 +5,7 @@ import RestaurantOverview from './Components/UserComponents/RestaurantOverview.j
 import CreateUser from "./Components/UserComponents/CreateUser.jsx";
 import Login from "./Components/UserComponents/Login.jsx";
 import 'bootstrap/dist/css/bootstrap.min.css';
+import RestaurantMenu from "./Components/UserComponents/RestaurantMenu.jsx";
 
 
 
@@ -14,6 +15,7 @@ function App() {
     const [user, setUser] = useState(null);
     const [showLogin, setShowLogin] = useState(false);
     const [showRegister, setShowRegister] = useState(false);
+    const [restaurant, setRestaurant] = useState(null);
 
     const handleShowLogin = () => {
         setShowLogin(true);
@@ -35,7 +37,10 @@ function App() {
             )}
             {showLogin && <Login setUser={setUser} setShowLogin={setShowLogin} />}
             {showRegister && <CreateUser setUser={setUser} setRegister={setShowRegister} />}
-            {user != null && user.customerId > 0 && <RestaurantOverview />}
+            {user != null && user.customerId > 0 && !restaurant && <RestaurantOverview restaurant={restaurant} setRestaurant={setRestaurant}/>}
+            {user != null && user.customerId > 0 && restaurant && <RestaurantMenu user={user} res={restaurant}/>}
+
+
         </>
     );
 }

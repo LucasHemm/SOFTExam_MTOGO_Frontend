@@ -34,7 +34,7 @@ function App() {
                 </div>
             )}
             {showLogin && <Login setUser={setUser} setShowLogin={setShowLogin} />}
-            {showRegister && <CreateUser setUser={setUser} />}
+            {showRegister && <CreateUser setUser={setUser} setRegister={setShowRegister} />}
             {user != null && user.customerId > 0 && <RestaurantOverview />}
         </>
     );

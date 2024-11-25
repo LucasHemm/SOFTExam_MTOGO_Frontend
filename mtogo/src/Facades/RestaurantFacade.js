@@ -33,6 +33,7 @@ export default class RestaurantFacade {
     }
 
     async addRestaurant(restaurant) {
+        console.log(restaurant);
         try {
             const response = await fetch(this.url, {
                 method: "POST",

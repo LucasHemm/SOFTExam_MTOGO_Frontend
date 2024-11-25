@@ -24,7 +24,8 @@ export default class UserFacade {
         }
     }
 
-    async register (user) {
+    async addUser (user) {
+        console.log(user);
         try {
             const response = await fetch(`${this.url}`, {
                 method: "POST",

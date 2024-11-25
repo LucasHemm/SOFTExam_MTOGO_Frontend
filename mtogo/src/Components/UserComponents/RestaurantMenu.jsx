@@ -2,10 +2,10 @@
 import React, { useState, useEffect } from 'react';
 import { Table, Button, Modal, Badge } from 'react-bootstrap';
 import { FaShoppingCart } from 'react-icons/fa';
-import RestaurantFacade from "../../Facades/RestaurantFacade.js";
+import OrderFacade from "../../Facades/OrderFacade.js";
 
-export default function RestaurantMenu({ user, res }) {
-    const restaurantFacade = new RestaurantFacade();
+export default function RestaurantMenu({ user, res, setRes }) {
+    const orderFacade = new OrderFacade();
 
     // State for cart items
     const [cartItems, setCartItems] = useState([]);
@@ -52,6 +52,42 @@ export default function RestaurantMenu({ user, res }) {
     // Functions to handle modal visibility
     const handleShowCart = () => setShowCart(true);
     const handleCloseCart = () => setShowCart(false);
+
+    const createOrder = () => {
+
+        cartItems.map(item => {
+            console.log(item)
+        });
+
+        let s= '';
+
+        const order = {
+            id: 0,
+            customerId: user.id,
+            restaurantId: res.id,
+            agentId: 0,
+            paymentId: 0,
+            orderLinesDTOs: cartItems.map(item => ({
+                menuItemId: item.id,
+                quantity: item.quantity
+            })),
+            totalPrice: cartItems.reduce((total, item) => total + item.price * item.quantity, 0),
+            status: 'Pending',
+            receipt: cartItems
+                    .map(item => `${item.itemName} x${item.quantity}`)
+                    .join(', ') +
+                `, Total: $${cartItems.reduce((total, item) => total + item.price * item.quantity, 0).toFixed(2)}`
+        };
+        orderFacade.createOrder(order);
+
+
+        setCartItems([]);
+        setShowCart(false);
+        setRes(null);
+
+        alert('Order placed!');
+
+    }
 
     // Calculate total price
     const totalPrice = cartItems.reduce((total, item) => total + item.price * item.quantity, 0);
@@ -149,7 +185,7 @@ export default function RestaurantMenu({ user, res }) {
                         Close
                     </Button>
                     {cartItems.length > 0 && (
-                        <Button variant="primary" onClick={() => alert('Proceed to Checkout')}>
+                        <Button variant="primary" onClick={createOrder}>
                             Checkout
                         </Button>
                     )}

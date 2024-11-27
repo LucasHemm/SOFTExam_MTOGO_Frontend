@@ -23,4 +23,18 @@ export default class AgentFacade {
             throw error;
         }
     }
+
+    async getAgentById(id) {
+        try {
+            const response = await fetch(`${this.url}/${id}`);
+            if (!response.ok) {
+                throw new Error(`Error: ${response.status} ${response.statusText}`);
+            }
+            const data = await response.json();
+            return data;
+        } catch (error) {
+            console.error("Failed to fetch agent:", error);
+            throw error;
+        }
+    }
 }

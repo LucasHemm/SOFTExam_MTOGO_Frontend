@@ -87,4 +87,48 @@ export default class RestaurantFacade {
             throw error;
         }
     }
+
+    //add menu item to a restaurant
+    async createMenuItem(menuItem) {
+
+
+        try {
+            const response = await fetch(`${this.url}/menuitem`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(menuItem)
+            });
+            if (!response.ok) {
+                throw new Error(`Error: ${response.status} ${response.statusText}`);
+            }
+            const data = await response.json();
+            return data;
+        } catch (error) {
+            console.error("Failed to add menu item:", error);
+            throw error;
+        }
+    }
+
+    //update menu item for a restaurant
+    async updateMenuItem(menuItem) {
+        try {
+            const response = await fetch(`${this.url}/menuitem/`, {
+                method: "PUT",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(menuItem)
+            });
+            if (!response.ok) {
+                throw new Error(`Error: ${response.status} ${response.statusText}`);
+            }
+            const data = await response.json();
+            return data;
+        } catch (error) {
+            console.error("Failed to update menu item:", error);
+            throw error;
+        }
+    }
 }

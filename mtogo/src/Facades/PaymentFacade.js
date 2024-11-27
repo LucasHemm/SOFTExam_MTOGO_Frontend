@@ -1,18 +1,17 @@
-// CustomerFacade.js
-export default class CustomerFacade {
+export default class PaymentFacade {
     constructor() {
-        this.url = "http://localhost:5199/api/CustomerApi";
+        this.url = "http://localhost:5199/api/paymentapi";
     }
 
-    async createCustomer(customer) { // Accept 'customer' as a parameter
-        console.log(customer);
+    async createPayment(payment) {
+        console.log(payment);
         try {
             const response = await fetch(this.url, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json"
                 },
-                body: JSON.stringify(customer) // Use the passed 'customer' object
+                body: JSON.stringify(payment)
             });
             if (!response.ok) {
                 throw new Error(`Error: ${response.status} ${response.statusText}`);
@@ -20,13 +19,12 @@ export default class CustomerFacade {
             const data = await response.json();
             return data;
         } catch (error) {
-            console.error("Failed to create customer:", error);
+            console.error("Failed to create payment:", error);
             throw error;
         }
     }
 
-
-    async getCustomerById(id) {
+    async getPaymentById(id) {
         try {
             const response = await fetch(`${this.url}/${id}`);
             if (!response.ok) {
@@ -35,7 +33,7 @@ export default class CustomerFacade {
             const data = await response.json();
             return data;
         } catch (error) {
-            console.error("Failed to fetch customer:", error);
+            console.error("Failed to fetch payment:", error);
             throw error;
         }
     }

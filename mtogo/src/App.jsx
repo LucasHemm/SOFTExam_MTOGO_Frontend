@@ -7,6 +7,7 @@ import Login from "./Components/UserComponents/Login.jsx";
 import 'bootstrap/dist/css/bootstrap.min.css';
 import RestaurantMenu from "./Components/UserComponents/RestaurantMenu.jsx";
 import AgentOverview from "./Components/UserComponents/AgentOverview.jsx";
+import RestaurantManager from "./Components/UserComponents/RestaurantManager.jsx";
 
 
 
@@ -41,6 +42,7 @@ function App() {
             {user != null && user.customerId > 0 && !restaurant && <RestaurantOverview user={user} restaurant={restaurant} setRestaurant={setRestaurant}/>}
             {user != null && user.customerId > 0 && restaurant && <RestaurantMenu user={user} res={restaurant} setRes={setRestaurant}/>}
             {user != null && user.agentId > 0 && <AgentOverview user={user} />}
+            {user != null && user.restaurantId > 0 && <RestaurantManager user={user} />}
 
 
         </>

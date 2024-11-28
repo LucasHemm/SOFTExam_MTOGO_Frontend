@@ -38,7 +38,7 @@ function App() {
             )}
             {showLogin && <Login setUser={setUser} setShowLogin={setShowLogin} />}
             {showRegister && <CreateUser setUser={setUser} setRegister={setShowRegister} />}
-            {user != null && user.customerId > 0 && !restaurant && <RestaurantOverview restaurant={restaurant} setRestaurant={setRestaurant}/>}
+            {user != null && user.customerId > 0 && !restaurant && <RestaurantOverview user={user} restaurant={restaurant} setRestaurant={setRestaurant}/>}
             {user != null && user.customerId > 0 && restaurant && <RestaurantMenu user={user} res={restaurant} setRes={setRestaurant}/>}
             {user != null && user.agentId > 0 && <AgentOverview user={user} />}
 

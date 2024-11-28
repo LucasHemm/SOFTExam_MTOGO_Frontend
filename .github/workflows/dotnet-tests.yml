@@ -23,7 +23,7 @@ jobs:
           password: ${{ secrets.DOCKER_PASSWORD }}
 
       - name: Build Docker image
-        working-directory: MTOGO
+        working-directory: mtogo
         run: |
           docker build -t lucashemcph/soft1exam_mtogofrontend:latest .
 

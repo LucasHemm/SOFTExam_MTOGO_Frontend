@@ -1,7 +1,7 @@
 // RestaurantFacade.js
 export default class RestaurantFacade {
     constructor() {
-        this.url = "http://restaurant_app:8080/api/restaurantapi";
+        this.url = "http://localhost:8087/api/restaurantapi";
     }
 
     async getAllRestaurants() {

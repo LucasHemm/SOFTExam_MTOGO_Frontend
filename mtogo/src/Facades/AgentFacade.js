@@ -1,6 +1,6 @@
 export default class AgentFacade {
     constructor() {
-        this.url = "http://agent_app:8080/api/agentapi";
+        this.url = "http://localhost:8087/api/agentapi";
     }
 
     async createAgent(agent) {

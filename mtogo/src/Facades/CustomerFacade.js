@@ -1,7 +1,7 @@
 // CustomerFacade.js
 export default class CustomerFacade {
     constructor() {
-        this.url = "http://customer_app:8080/api/CustomerApi";
+        this.url = "http://localhost:8087/api/CustomerApi";
     }
 
     async createCustomer(customer) { // Accept 'customer' as a parameter

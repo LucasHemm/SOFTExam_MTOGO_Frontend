@@ -1,7 +1,7 @@
 // RestaurantFacade.js
 export default class UserFacade {
     constructor() {
-        this.url = "http://user_app:8080/api/userapi";
+        this.url = "http://localhost:8082/api/userapi";
     }
 
     async login (user) {

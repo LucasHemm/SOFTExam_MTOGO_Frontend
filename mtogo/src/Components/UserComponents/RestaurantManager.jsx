@@ -74,12 +74,7 @@ export default function RestaurantManager({ user }) {
 
     const handleImageChange = (event) => {
         const base64 = event.target.value;
-        if (isValidBase64(base64)) {
-            setImagePreview(base64); // Update preview
-        } else {
-            setImagePreview(""); // Clear preview if invalid
-            alert("Invalid Base64 string");
-        }
+        setImagePreview(base64); // Update preview
     };
 
     const isValidBase64 = (str) => {

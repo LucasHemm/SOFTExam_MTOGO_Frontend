@@ -14,6 +14,7 @@ export default function login({setUser,setShowLogin}) {
                     password
                 };
                 const data = await userFacade.login(user);
+                console.log(data)
                 setUser(data);
                 setShowLogin(false);
             } catch (error) {

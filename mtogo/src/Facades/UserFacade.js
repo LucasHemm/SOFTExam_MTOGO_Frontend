@@ -1,17 +1,16 @@
-// RestaurantFacade.js
 export default class UserFacade {
     constructor() {
         this.url = "http://localhost:5199/api/userapi";
     }
 
-    async login (user) {
+    async login(user) {
         try {
             const response = await fetch(`${this.url}/login`, {
                 method: "POST",
                 headers: {
-                    "Content-Type": "application/json"
+                    "Content-Type": "application/json",
                 },
-                body: JSON.stringify(user)
+                body: JSON.stringify(user),
             });
             if (!response.ok) {
                 throw new Error(`Error: ${response.status} ${response.statusText}`);
@@ -24,15 +23,15 @@ export default class UserFacade {
         }
     }
 
-    async addUser (user) {
+    async addUser(user) {
         console.log(user);
         try {
             const response = await fetch(`${this.url}`, {
                 method: "POST",
                 headers: {
-                    "Content-Type": "application/json"
+                    "Content-Type": "application/json",
                 },
-                body: JSON.stringify(user)
+                body: JSON.stringify(user),
             });
             if (!response.ok) {
                 throw new Error(`Error: ${response.status} ${response.statusText}`);
@@ -44,5 +43,4 @@ export default class UserFacade {
             throw error;
         }
     }
-
 }

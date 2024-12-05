@@ -63,6 +63,7 @@ export default function RestaurantMenu({ user, res, setRes }) {
 
         const order = {
             id: 0,
+            orderNumber: user.orderNumber,
             customerId: user.customerId,
             restaurantId: res.id,
             agentId: 0,

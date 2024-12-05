@@ -1,5 +1,5 @@
-import './App.css'
-import React, { useState } from "react";
+import './App.css';
+import React, { useState, useEffect } from "react";
 import { Button } from "react-bootstrap";
 import RestaurantOverview from './Components/UserComponents/RestaurantOverview.jsx';
 import CreateUser from "./Components/UserComponents/CreateUser.jsx";
@@ -8,16 +8,21 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import RestaurantMenu from "./Components/UserComponents/RestaurantMenu.jsx";
 import AgentOverview from "./Components/UserComponents/AgentOverview.jsx";
 import RestaurantManager from "./Components/UserComponents/RestaurantManager.jsx";
-
-
-
-
+import ManagerOverview from "./Components/UserComponents/ManagerOverview.jsx";
 
 function App() {
     const [user, setUser] = useState(null);
     const [showLogin, setShowLogin] = useState(false);
     const [showRegister, setShowRegister] = useState(false);
     const [restaurant, setRestaurant] = useState(null);
+
+    useEffect(() => {
+        const savedUser = localStorage.getItem("user");
+        if (savedUser) {
+            setUser(JSON.parse(savedUser));
+            setShowLogin(false);
+        }
+    }, []);
 
     const handleShowLogin = () => {
         setShowLogin(true);
@@ -29,6 +34,12 @@ function App() {
         setShowLogin(false);
     };
 
+    const handleLogout = () => {
+        setUser(null);
+        setShowLogin(true);
+        localStorage.removeItem("user");
+    };
+
     return (
         <>
             {user == null && (
@@ -37,14 +48,24 @@ function App() {
                     <Button onClick={handleShowRegister}>Register</Button>
                 </div>
             )}
-            {showLogin && <Login setUser={setUser} setShowLogin={setShowLogin} />}
-            {showRegister && <CreateUser setUser={setUser} setRegister={setShowRegister} />}
-            {user != null && user.customerId > 0 && !restaurant && <RestaurantOverview restaurant={restaurant} setRestaurant={setRestaurant}/>}
-            {user != null && user.customerId > 0 && restaurant && <RestaurantMenu user={user} res={restaurant} setRes={setRestaurant}/>}
+            {user != null && <div className="mb-3 d-flex justify-content-end">
+                <Button variant="danger" onClick={handleLogout}>
+                    Logout
+                </Button>
+            </div>}
+            {showLogin && <Login setUser={setUser} setShowLogin={setShowLogin}/>}
+            {showRegister && <CreateUser setUser={setUser} setRegister={setShowRegister}/>}
+            {user != null && user.customerId > 0 && !restaurant && (
+                <RestaurantOverview restaurant={restaurant} setRestaurant={setRestaurant} />
+            )}
+            {user != null && user.customerId > 0 && restaurant && (
+                <RestaurantMenu user={user} res={restaurant} setRes={setRestaurant} />
+            )}
             {user != null && user.agentId > 0 && <AgentOverview user={user} />}
             {user != null && user.restaurantId > 0 && <RestaurantManager user={user} />}
-
-
+            {user != null && user.managerId > 0 && (
+                <ManagerOverview user={user} setUser={setUser} setShowLogin={setShowLogin} handleLogout={handleLogout} />
+            )}
         </>
     );
 }

@@ -30,11 +30,11 @@ function App() {
         setShowLogin(false);
     };
 
-    <div className="mb-3 d-flex justify-content-end">
-        <Button variant="danger" onClick={handleLogout}>
-            Logout
-        </Button>
-    </div>
+    const handleLogout = () => {
+        setUser(null); // Clear user state
+        setShowLogin(true); // Redirect to login page
+        localStorage.removeItem("user"); // Clear saved user data
+    };
 
 
     return (
@@ -60,9 +60,9 @@ function App() {
             )}
             {user != null && user.agentId > 0 && <AgentOverview user={user} />}
             {user != null && user.restaurantId > 0 && <RestaurantManager user={user} />}
-            {/*{user != null && user.managerId > 0 && (*/}
-            {/*    <ManagerOverview user={user} setUser={setUser} setShowLogin={setShowLogin} handleLogout={handleLogout} />*/}
-            {/*)}*/}
+            {user != null && user.managerId > 0 && (
+                <ManagerOverview user={user} setUser={setUser} setShowLogin={setShowLogin} handleLogout={handleLogout} />
+            )}
         </>
     );
 }

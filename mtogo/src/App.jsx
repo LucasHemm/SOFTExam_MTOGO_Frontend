@@ -43,7 +43,7 @@ function App() {
                     <Button onClick={handleShowRegister}>Register</Button>
                 </div>
             )}
-            {user != null && <div className="mb-3 d-flex justify-content-end">
+            {user != null && <div className="mb-3 d-flex justify-content-start">
                 <Button variant="danger" onClick={handleLogout}>
                     Logout
                 </Button>

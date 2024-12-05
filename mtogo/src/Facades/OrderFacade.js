@@ -1,7 +1,7 @@
 export default class OrderFacade {
 
     constructor() {
-        this.url = "http://localhost:5199/api/orderapi";
+        this.url = "http://localhost:8087/api/orderapi";
     }
 
     async createOrder(order) {
@@ -117,5 +117,38 @@ export default class OrderFacade {
         }
     }
 
+    async getFinishedOrders(customerId) {
+        try {
+            const response = await fetch(this.url+"/customer/"+customerId);
+            if (!response.ok) {
+                throw new Error(`Error: ${response.status} ${response.statusText}`);
+            }
+            const data = await response.json();
+            return data;
+        } catch (error) {
+            console.error("Failed to fetch orders:", error);
+            throw error;
+        }
+    }
+
+    async createReview(review) {
+        try {
+            const response = await fetch("http://localhost:8087/api/feedbackapi", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(review)
+            });
+            if (!response.ok) {
+                throw new Error(`Error: ${response.status} ${response.statusText}`);
+            }
+            const data = await response.json();
+            return data;
+        } catch (error) {
+            console.error("Failed to create review:", error);
+            throw error;
+        }
+    }
 
 }

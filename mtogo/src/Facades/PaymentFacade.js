@@ -1,6 +1,6 @@
 export default class PaymentFacade {
     constructor() {
-        this.url = "http://localhost:5199/api/paymentapi";
+        this.url = "http://payment_app:8087/api/paymentapi";
     }
 
     async createPayment(payment) {

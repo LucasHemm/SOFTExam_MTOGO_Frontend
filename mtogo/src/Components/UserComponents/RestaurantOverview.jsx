@@ -4,8 +4,11 @@ import Table from 'react-bootstrap/Table';
 import Form from 'react-bootstrap/Form';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
+import Button from 'react-bootstrap/Button';
+import Modal from 'react-bootstrap/Modal';
+import OrderFacade from "../../Facades/OrderFacade.js";
 
-export default function RestaurantOverview({ restaurant, setRestaurant }) {
+export default function RestaurantOverview({ user, restaurant, setRestaurant }) {
     const [restaurants, setRestaurants] = useState([]);
     const [filteredRestaurants, setFilteredRestaurants] = useState([]);
     const [filters, setFilters] = useState({
@@ -14,46 +17,56 @@ export default function RestaurantOverview({ restaurant, setRestaurant }) {
         cuisineType: '',
         minRating: ''
     });
+    const [showModal, setShowModal] = useState(false);
+    const [previousOrders, setPreviousOrders] = useState([]);
+    const [reviews, setReviews] = useState({});
 
+    // Instantiate facades outside of useEffect to prevent re-creation on each render
     const restaurantFacade = new RestaurantFacade();
+    const orderFacade = new OrderFacade();
 
+    // Fetch data on component mount or when user.customerId changes
     useEffect(() => {
+        // Fetch all restaurants
         restaurantFacade.getAllRestaurants()
             .then(data => {
                 setRestaurants(data);
-                setFilteredRestaurants(data); // Initialize filtered restaurants
+                setFilteredRestaurants(data);
             })
             .catch(error => {
-                console.error(error);
+                console.error("Error fetching restaurants:", error);
             });
-    }, []);
 
+        // Fetch previous orders
+        orderFacade.getFinishedOrders(user.customerId)
+            .then((data) => setPreviousOrders(data))
+            .catch(error => {
+                console.error("Error fetching previous orders:", error);
+            });
+    }, [user.customerId]); // Only re-run when user.customerId changes
+
+    // Filter restaurants based on filters
     useEffect(() => {
-        // Apply filters whenever the filters or restaurants change
         let filtered = restaurants;
 
-        // Filter by name
         if (filters.name) {
             filtered = filtered.filter(restaurant =>
                 restaurant.name.toLowerCase().includes(filters.name.toLowerCase())
             );
         }
 
-        // Filter by region
         if (filters.region) {
             filtered = filtered.filter(restaurant =>
                 restaurant.address.region === filters.region
             );
         }
 
-        // Filter by cuisine type
         if (filters.cuisineType) {
             filtered = filtered.filter(restaurant =>
                 restaurant.cuisineType === filters.cuisineType
             );
         }
 
-        // Filter by minimum rating
         if (filters.minRating) {
             const min = parseFloat(filters.minRating);
             if (!isNaN(min)) {
@@ -66,7 +79,6 @@ export default function RestaurantOverview({ restaurant, setRestaurant }) {
         setFilteredRestaurants(filtered);
     }, [filters, restaurants]);
 
-    // Extract unique regions and cuisine types for the dropdowns
     const uniqueRegions = [...new Set(restaurants.map(r => r.address.region))];
     const uniqueCuisineTypes = [...new Set(restaurants.map(r => r.cuisineType))];
 
@@ -79,13 +91,97 @@ export default function RestaurantOverview({ restaurant, setRestaurant }) {
     };
 
     const handleRowClick = (restaurant) => {
-        console.log(restaurant);
         setRestaurant(restaurant);
+    };
+
+    const handleModalClose = () => setShowModal(false);
+    const handleModalShow = () => setShowModal(true);
+
+    const handleReviewChange = (orderId, field, value) => {
+        setReviews(prevReviews => ({
+            ...prevReviews,
+            [orderId]: {
+                ...prevReviews[orderId],
+                [field]: value
+            }
+        }));
+    };
+
+    // Handlers for review modal
+    const [showReviewModal, setShowReviewModal] = useState(false);
+    const [currentOrder, setCurrentOrder] = useState(null);
+    const [reviewForm, setReviewForm] = useState({
+        title: '',
+        description: '',
+        restaurantRating: '1',
+        deliveryAgentRating: '1'
+    });
+
+    const handleReviewButtonClick = (order) => {
+        setCurrentOrder(order);
+        setShowReviewModal(true);
+    };
+
+    const handleReviewModalClose = () => {
+        setShowReviewModal(false);
+        setCurrentOrder(null);
+        setReviewForm({
+            title: '',
+            description: '',
+            restaurantRating: '1',
+            deliveryAgentRating: '1'
+        });
+    };
+
+    const handleReviewFormChange = (e) => {
+        const { name, value } = e.target;
+        setReviewForm(prev => ({
+            ...prev,
+            [name]: value
+        }));
+    };
+
+    const handleReviewSubmit = (e) => {
+        e.preventDefault();
+        const { title, description, restaurantRating, deliveryAgentRating } = reviewForm;
+
+        // Basic validation
+        if (!title.trim() || !description.trim()) {
+            alert("Please fill out all fields.");
+            return;
+        }
+
+        const review = {
+            id: 0, // Assuming backend assigns the correct ID
+            orderDTO: currentOrder,
+            title: title.trim(),
+            description: description.trim(),
+            agentRating: parseInt(deliveryAgentRating, 10),
+            restaurantRating: parseInt(restaurantRating, 10),
+            overAllRating: Math.round((parseInt(deliveryAgentRating, 10) + parseInt(restaurantRating, 10)) / 2)
+        }
+
+        orderFacade.createReview(review)
+            .then(r => {
+                alert("Review submitted successfully!");
+                handleReviewModalClose();
+                // Update the previousOrders state by removing the reviewed order
+                setPreviousOrders(prevOrders => prevOrders.filter(order => order.id !== currentOrder.id));
+            })
+            .catch(error => {
+                console.error("Error submitting review:", error);
+                alert("Failed to submit review. Please try again.");
+            });
     };
 
     return (
         <div className="container mt-4">
-            <h1>Restaurants</h1>
+            <div className="d-flex justify-content-between align-items-center">
+                <h1>Restaurants</h1>
+                <Button variant="primary" onClick={handleModalShow}>
+                    Review Previous Orders
+                </Button>
+            </div>
 
             {/* Filter Section */}
             <Form className="mb-4">
@@ -173,6 +269,7 @@ export default function RestaurantOverview({ restaurant, setRestaurant }) {
                             key={restaurant.id}
                             onClick={() => handleRowClick(restaurant)}
                             className="clickable-row"
+                            style={{ cursor: 'pointer' }}
                         >
                             <td>{restaurant.name}</td>
                             <td>
@@ -189,6 +286,136 @@ export default function RestaurantOverview({ restaurant, setRestaurant }) {
                 )}
                 </tbody>
             </Table>
+
+            {/* Modal for Previous Orders */}
+            <Modal
+                show={showModal}
+                onHide={handleModalClose}
+                dialogClassName="custom-modal-dialog"
+                size="lg"
+            >
+                <Modal.Header closeButton>
+                    <Modal.Title>Previous Orders</Modal.Title>
+                </Modal.Header>
+                <Modal.Body
+                    style={{
+                        overflowX: 'auto',
+                    }}
+                >
+                    {previousOrders.length > 0 ? (
+                        <Table striped bordered hover>
+                            <thead>
+                            <tr>
+                                <th>Restaurant</th>
+                                <th>Receipt</th>
+                                <th>Total</th>
+                                <th>Action</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            {previousOrders.map((order) => (
+                                <tr key={order.id}>
+                                    <td>{order.restaurantName || order.restaurantId}</td>
+                                    <td>
+                                        {order.receipt}
+                                    </td>
+                                    <td>${order.totalPrice.toFixed(2)}</td>
+                                    <td>
+                                        <Button
+                                            variant="secondary"
+                                            size="sm"
+                                            onClick={() => handleReviewButtonClick(order)}
+                                        >
+                                            Review
+                                        </Button>
+                                    </td>
+                                </tr>
+                            ))}
+                            </tbody>
+                        </Table>
+                    ) : (
+                        <p>No previous orders to display.</p>
+                    )}
+                </Modal.Body>
+                <Modal.Footer>
+                    <Button variant="secondary" onClick={handleModalClose}>
+                        Close
+                    </Button>
+                </Modal.Footer>
+            </Modal>
+
+            {/* Modal for Submitting a Review */}
+            <Modal
+                show={showReviewModal}
+                onHide={handleReviewModalClose}
+                size="lg"
+            >
+                <Modal.Header closeButton>
+                    <Modal.Title>
+                        {currentOrder ? `Submit Review for ${currentOrder.restaurantName || currentOrder.restaurantId}` : 'Submit Review'}
+                    </Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
+                    <Form onSubmit={handleReviewSubmit}>
+                        <Form.Group controlId="reviewTitle" className="mb-3">
+                            <Form.Label>Title</Form.Label>
+                            <Form.Control
+                                type="text"
+                                name="title"
+                                value={reviewForm.title}
+                                onChange={handleReviewFormChange}
+                                placeholder="Enter review title"
+                                required
+                            />
+                        </Form.Group>
+                        <Form.Group controlId="reviewDescription" className="mb-3">
+                            <Form.Label>Description</Form.Label>
+                            <Form.Control
+                                as="textarea"
+                                rows={4}
+                                name="description"
+                                value={reviewForm.description}
+                                onChange={handleReviewFormChange}
+                                placeholder="Write your review here..."
+                                required
+                            />
+                        </Form.Group>
+                        <Form.Group controlId="reviewRestaurantRating" className="mb-3">
+                            <Form.Label>Restaurant Rating</Form.Label>
+                            <Form.Control
+                                as="select"
+                                name="restaurantRating"
+                                value={reviewForm.restaurantRating}
+                                onChange={handleReviewFormChange}
+                                required
+                            >
+                                <option value="">Select Rating</option>
+                                {[1, 2, 3, 4, 5].map(num => (
+                                    <option key={num} value={num}>{num}</option>
+                                ))}
+                            </Form.Control>
+                        </Form.Group>
+                        <Form.Group controlId="reviewDeliveryAgentRating" className="mb-3">
+                            <Form.Label>Delivery Agent Rating</Form.Label>
+                            <Form.Control
+                                as="select"
+                                name="deliveryAgentRating"
+                                value={reviewForm.deliveryAgentRating}
+                                onChange={handleReviewFormChange}
+                                required
+                            >
+                                <option value="">Select Rating</option>
+                                {[1, 2, 3, 4, 5].map(num => (
+                                    <option key={num} value={num}>{num}</option>
+                                ))}
+                            </Form.Control>
+                        </Form.Group>
+                        <Button variant="primary" type="submit">
+                            Submit Review
+                        </Button>
+                    </Form>
+                </Modal.Body>
+            </Modal>
         </div>
     );
 }

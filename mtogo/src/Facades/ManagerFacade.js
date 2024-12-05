@@ -3,7 +3,7 @@ export default class ManagerFacade {
 
     async getOrders() {
         try {
-            const response = await fetch("http://localhost:5005/api/OrderApi");
+            const response = await fetch("http://localhost:8087/api/OrderApi");
             if (!response.ok) {
                 throw new Error(`Error: ${response.status} ${response.statusText}`);
             }
@@ -17,7 +17,7 @@ export default class ManagerFacade {
 
     async getCustomers() {
         try {
-            const response = await fetch("http://localhost:5042/api/CustomerApi");
+            const response = await fetch("http://localhost:8087/api/CustomerApi");
             if (!response.ok) {
                 throw new Error(`Error: ${response.status} ${response.statusText}`);
             }
@@ -31,7 +31,7 @@ export default class ManagerFacade {
 
     async getAgents() {
         try {
-            const response = await fetch("http://localhost:5037/api/AgentApi/All");
+            const response = await fetch("http://localhost:8087/api/AgentApi/All");
             console.log("response", response.url);
             if (!response.ok) {
                 throw new Error(`Error: ${response.status} ${response.statusText}`);
@@ -46,7 +46,7 @@ export default class ManagerFacade {
 
     async getRestaurants() {
         try {
-            const response = await fetch("http://localhost:5176/api/RestaurantApi");
+            const response = await fetch("http://localhost:8087/api/RestaurantApi");
             if (!response.ok) {
                 throw new Error(`Error: ${response.status} ${response.statusText}`);
             }

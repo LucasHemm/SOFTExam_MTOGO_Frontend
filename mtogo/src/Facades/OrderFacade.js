@@ -1,7 +1,7 @@
 export default class OrderFacade {
 
     constructor() {
-        this.url = "http://localhost:5199/api/orderapi";
+        this.url = "http://localhost:8087/api/orderapi";
     }
 
     async createOrder(order) {
@@ -133,7 +133,7 @@ export default class OrderFacade {
 
     async createReview(review) {
         try {
-            const response = await fetch("http://localhost:5199/api/feedbackapi", {
+            const response = await fetch("http://localhost:8087/api/feedbackapi", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json"
